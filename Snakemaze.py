@@ -3,12 +3,15 @@ import random
 from button import Button
 pygame.init()
 
+fps = 10
 screen_width, screen_height  = 800, 800
-player_width, player_height = 30, 30
-screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
-player = pygame.Rect((300, 400, player_width, player_height))
+player_size = 30
+screen = pygame.display.set_mode((screen_width, screen_height+50), pygame.RESIZABLE)
 
-food = pygame.Rect((random.randint(0,790),random.randint(0,790),10,10))
+clock = pygame.time.Clock()
+
+food = pygame.Rect((random.randint(0,790),random.randint(50,890),10,10))
+bonus_food = pygame.Rect((random.randint(0,780),random.randint(0,780),20,20))
 pygame.display.set_caption("Snake")
 
 start_img = pygame.image.load('C:/Users/Nikhil/Desktop/img/start_btn.png').convert_alpha()
@@ -20,13 +23,19 @@ running = True
 playing = False
 color = "black"
 
-# def scoreboard():
+score = 0
+font = pygame.font.SysFont("Lucida Calligraphy", 32)
+
+snake = []
+snake.append(pygame.Rect(300, 400, player_size, player_size))
+snake.append(pygame.Rect(280, 400, player_size, player_size))
+snake.append(pygame.Rect(260, 400, player_size, player_size))
+
+direction = 'right'
 
 while running:
 
     screen.fill(color)
-    for i in range(len(player)):
-        pygame.draw.rect(screen, (255, 0, 0), player)
     pygame.draw.rect(screen,(0, 255, 0),food)
     if playing:
         
@@ -34,49 +43,64 @@ while running:
         
         if key[pygame.K_q] == True:
             running = False
-        else:    
-            if key[pygame.K_a] == True:
-                if player.x>-1:
-                    player.move_ip(-1, 0)
+        else:
+            if key[pygame.K_UP] == True and direction != "down":
+                direction = "up"
+            elif key[pygame.K_DOWN] == True and direction != "up":
+                direction = "down"
+            elif key[pygame.K_LEFT] == True and direction != "right":
+                direction = "left"
+            elif key[pygame.K_RIGHT] == True and direction != "left":
+                direction = "right"
+
+            new_head = snake[0].copy()
+            if direction == "left":
+                new_head.x -= player_size
                 
+            elif direction == "right":
+                new_head.x += player_size
 
-            elif key[pygame.K_d] == True:
-                if player.x<(screen_width - player_width) + 1:
-                    player.move_ip(1, 0)
-
-            elif key[pygame.K_w] == True:
-                if player.y>-1:
-                    player.move_ip(0, -1)
-
-            elif key[pygame.K_s] == True:
-                if player.y<(screen_height - player_height) + 1:
-                    player.move_ip(0, 1)
-
-        
+            elif direction == "up":
+                new_head.y -= player_size
                 
-        collide = pygame.Rect.colliderect(player, food)
+            elif direction == "down":
+                new_head.y += player_size
+
+            snake.insert(0, new_head)
+            snake.pop()
+
+
+        collide = pygame.Rect.colliderect(snake[0], food)
         if collide:
-            food.x = random.randint(0,800)
-            food.y = random.randint(0,800)
-        
+            score += 1
+            snake.append(snake[-1].copy())
+            food.x = random.randint(0,790)
+            food.y = random.randint(50,840)
+
+        if (snake[0].x < 0 or snake[0].x >= screen_width or
+            snake[0].y < 0 or snake[0].y >= screen_height or
+            snake[0] in snake[1:]):
+            
+            running = False
+
     else:
         if start_button.draw(screen):
-           playing = True
+           playing = True   
 
         if exit_button.draw(screen):
-            print("exit")
-            running = False
+            running = False 
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            running = False 
 
+    for square in snake:
+        pygame.draw.rect(screen, (255, 0, 0), square)   
+
+    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+    screen.blit(score_text, (10, 10))
     pygame.display.update()
+    clock.tick(fps)
     
-    '''if color == "black":
-        color = "blue"
-    
-    else:
-        color = "black"'''
     
 pygame.quit()
