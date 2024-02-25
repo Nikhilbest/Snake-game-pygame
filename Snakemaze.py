@@ -5,38 +5,41 @@ pygame.init()
 
 fps = 10
 screen_width, screen_height  = 800, 800
-player_size = 30
-screen = pygame.display.set_mode((screen_width, screen_height+50), pygame.RESIZABLE)
+player_size = 20
+background_image = pygame.image.load("background_img/background.jpg")
+screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
+
 
 clock = pygame.time.Clock()
 
-food = pygame.Rect((random.randint(0,790),random.randint(50,890),10,10))
-bonus_food = pygame.Rect((random.randint(0,780),random.randint(0,780),20,20))
-pygame.display.set_caption("Snake")
+food = pygame.Rect((random.randint(0,790),random.randint(50,840),10,10))
+
+pygame.display.set_caption("Snake Game")
 
 start_img = pygame.image.load('C:/Users/Nikhil/Desktop/img/start_btn.png').convert_alpha()
 exit_img = pygame.image.load('C:/Users/Nikhil/Desktop/img/exit_btn.png').convert_alpha()
 
 start_button = Button(300, 300, start_img, 0.5)
 exit_button = Button(310, 400, exit_img, 0.5)
+
 running = True
 playing = False
-color = "black"
 
 score = 0
 font = pygame.font.SysFont("Lucida Calligraphy", 32)
 
 snake = []
-snake.append(pygame.Rect(300, 400, player_size, player_size))
-snake.append(pygame.Rect(280, 400, player_size, player_size))
 snake.append(pygame.Rect(260, 400, player_size, player_size))
+snake.append(pygame.Rect(240, 400, player_size, player_size))
+snake.append(pygame.Rect(220, 400, player_size, player_size))
 
 direction = 'right'
 
 while running:
 
-    screen.fill(color)
-    pygame.draw.rect(screen,(0, 255, 0),food)
+    screen.blit(background_image, (0, 0))
+    pygame.draw.rect(screen,(0, 0, 0),food)
+
     if playing:
         
         key = pygame.key.get_pressed()
@@ -68,7 +71,6 @@ while running:
 
             snake.insert(0, new_head)
             snake.pop()
-
 
         collide = pygame.Rect.colliderect(snake[0], food)
         if collide:
