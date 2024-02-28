@@ -12,7 +12,7 @@ screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE
 
 clock = pygame.time.Clock()
 
-food = pygame.Rect((random.randint(0,790),random.randint(50,840),10,10))
+food = pygame.Rect((random.randint(0,750),random.randint(50,790),10,10))
 
 pygame.display.set_caption("Snake Game")
 
